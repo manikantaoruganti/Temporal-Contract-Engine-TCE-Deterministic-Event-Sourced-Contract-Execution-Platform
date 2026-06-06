@@ -1,0 +1,109 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tce-postgres
+    environment:
+      POSTGRES_DB: tce_db
+      POSTGRES_USER: tce_user
+      POSTGRES_PASSWORD: tce_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tce_user -d tce_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tce-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: tce-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tce-network
+
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.1.8
+    container_name: tce-redpanda
+    command:
+      - redpanda
+      - start
+      - --overprovisioned
+      - --smp=1
+      - --memory=1G
+      - --reserve-memory=0M
+      - --node-id=0
+      - --check=false
+      - --kafka-addr=PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr=PLAINTEXT://redpanda:29092,OUTSIDE://localhost:9092
+    ports:
+      - "9092:9092"
+    networks:
+      - tce-network
+
+  tce-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tce-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tce_db
+      SPRING_DATASOURCE_USERNAME: tce_user
+      SPRING_DATASOURCE_PASSWORD: tce_password
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: redpanda:29092
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - tce-network
+
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: tce-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - tce-app
+    networks:
+      - tce-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tce-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - tce-app
+    networks:
+      - tce-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  tce-network:
+    driver: bridge
