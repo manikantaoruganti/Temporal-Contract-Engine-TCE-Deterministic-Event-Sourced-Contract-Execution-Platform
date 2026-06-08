@@ -180,7 +180,6 @@ Services
                         ▼
                  Event Consumers
 ```
-```
 
 # Temporal Contract Engine
 
@@ -227,7 +226,7 @@ Services
 ## About
 
 ![About](images/about.png)
-```
+
 ---
 
 # Technology Stack
