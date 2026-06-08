@@ -180,7 +180,54 @@ Services
                         ▼
                  Event Consumers
 ```
+```
 
+# Temporal Contract Engine
+
+## Architecture
+
+![System Architecture](images/system_architecture.png)
+
+## Dashboard
+
+![Dashboard](images/dashboard.png)
+
+## Rules Engine
+
+![Rules](images/rules.png)
+
+## Execution Logs
+
+![Execution Logs](images/execution_logs.png)
+
+## Metrics Center
+
+![Metrics Center](images/metrics_center.png)
+
+## System Health
+
+![System Health](images/system_health.png)
+
+## Contract Status
+
+### Successful Contract
+![Successful Contract](images/succesful_contract.png)
+
+### Failed Contract
+![Failed Contract](images/failed_contract.png)
+
+## Dead Letter Queue
+
+![Dead Letter Queue](images/dead_letter_queue.png)
+
+## Replay Audit
+
+![Replay Audit](images/replay_audit.png)
+
+## About
+
+![About](images/about.png)
+```
 ---
 
 # Technology Stack
@@ -199,6 +246,10 @@ Services
 | Containers | Docker           |
 
 ---
+
+
+
+
 
 # Domain Model
 
@@ -276,7 +327,7 @@ Fields:
 
 ---
 
-# API Reference
+# API Reference:8080
 
 ---
 
