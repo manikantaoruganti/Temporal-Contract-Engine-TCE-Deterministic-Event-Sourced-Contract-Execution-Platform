@@ -38,8 +38,7 @@ Unlike traditional CRUD applications that overwrite state and lose historical co
 24. Swagger Validation Guide
 25. Verification Checklist
 26. Engineering Tradeoffs
-27. Resume Impact
-28. Future Improvements
+27. Future Improvements
 
 ---
 
